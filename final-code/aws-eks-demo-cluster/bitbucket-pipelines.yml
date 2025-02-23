@@ -1,0 +1,83 @@
+pipelines:
+  default:
+    - step:
+        name: Deploy to Dev
+        image: atlassian/default-image:2
+        caches:
+          - docker
+        script:
+          - apt-get update && apt-get install -y unzip
+          - curl "https://releases.hashicorp.com/terraform/1.0.11/terraform_1.0.11_linux_amd64.zip" -o "terraform.zip"
+          - unzip terraform.zip
+          - mv terraform /usr/local/bin/
+          - terraform --version
+          - curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+          - unzip awscliv2.zip
+          - ./aws/install
+          - aws --version
+          - terraform init
+          - terraform apply -auto-approve
+          - aws eks update-kubeconfig --region us-east-1 --name my-eks-cluster
+          - kubectl apply -f Application\ deployment/deployment-dev.yaml
+          - kubectl apply -f Application\ deployment/service.yaml
+        services:
+          - docker
+        environment:
+          AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
+          AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
+          AWS_DEFAULT_REGION: 'us-east-1'
+  branches:
+    qa:
+      - step:
+          name: Deploy to QA
+          image: atlassian/default-image:2
+          caches:
+            - docker
+          script:
+            - apt-get update && apt-get install -y unzip
+            - curl "https://releases.hashicorp.com/terraform/1.0.11/terraform_1.0.11_linux_amd64.zip" -o "terraform.zip"
+            - unzip terraform.zip
+            - mv terraform /usr/local/bin/
+            - terraform --version
+            - curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            - unzip awscliv2.zip
+            - ./aws/install
+            - aws --version
+            - terraform init
+            - terraform apply -auto-approve
+            - aws eks update-kubeconfig --region us-east-1 --name my-eks-cluster
+            - kubectl apply -f Application\ deployment/deployment-qa.yaml
+            - kubectl apply -f Application\ deployment/service.yaml
+          services:
+            - docker
+          environment:
+            AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
+            AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
+            AWS_DEFAULT_REGION: 'us-east-1'
+    prod:
+      - step:
+          name: Deploy to Prod
+          image: atlassian/default-image:2
+          caches:
+            - docker
+          script:
+            - apt-get update && apt-get install -y unzip
+            - curl "https://releases.hashicorp.com/terraform/1.0.11/terraform_1.0.11_linux_amd64.zip" -o "terraform.zip"
+            - unzip terraform.zip
+            - mv terraform /usr/local/bin/
+            - terraform --version
+            - curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+            - unzip awscliv2.zip
+            - ./aws/install
+            - aws --version
+            - terraform init
+            - terraform apply -auto-approve
+            - aws eks update-kubeconfig --region us-east-1 --name my-eks-cluster
+            - kubectl apply -f Application\ deployment/deployment-prod.yaml
+            - kubectl apply -f Application\ deployment/service.yaml
+          services:
+            - docker
+          environment:
+            AWS_ACCESS_KEY_ID: $AWS_ACCESS_KEY_ID
+            AWS_SECRET_ACCESS_KEY: $AWS_SECRET_ACCESS_KEY
+            AWS_DEFAULT_REGION: 'us-east-1'

@@ -1,0 +1,15 @@
+aws-eks-demo-cluster/
+├── Application deployment/
+│   ├── deployment.yaml
+│   ├── fetch-env.sh
+│   ├── service.yaml
+├── alb.tf
+├── ecr.tf
+├── eks.tf
+├── iam.tf
+├── main.tf
+├── outputs.tf
+├── provider.tf
+├── terraform.tfvars
+├── variables.tf
+└── service-account.yaml
